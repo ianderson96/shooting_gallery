@@ -3,6 +3,7 @@ defmodule ShootingGalleryWeb.UserSocket do
 
   ## Channels
   # channel "room:*", ShootingGalleryWeb.RoomChannel
+  channel "games:*", ShootingGalleryWeb.GamesChannel
 
   # Socket params are passed from the client and can
   # be used to verify and authenticate a user. After
