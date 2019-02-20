@@ -1,12 +1,17 @@
-<script>
- window.gameName = "<%= @name %>";
+<script>  
+  //window.onload = function() {
+    //console.log(localStorage.getItem("playerName"));
+    //window.playerName = localStorage.getItem("playerName");
+    window.gameName = "<%= @name %>";
+  //}
+
 </script>
 
 <div class="row">
   <div class="column">
     <h1>Shooting Gallery Game: <%= @name %></h1>
     <div id="root">
-      React component loading...
+      <p>React component loading...</p>
     </div>
   </div>
 </div>

@@ -24,4 +24,14 @@ defmodule ShootingGallery.GameServer do
   def init(game) do
     {:ok, game}
   end
+
+  def move(name, x, y, player) do
+    GenServer.call(reg(name), {:move, name, x, y, player})
+  end
+
+  def handle_call({:move, name, x, y, player}, _from, game) do
+    game = ShootingGallery.Game.move(game, x, y, player)
+    ShootingGallery.BackupAgent.put(name, game)
+    {:reply, game, game}
+  end
 end
