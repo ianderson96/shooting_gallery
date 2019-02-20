@@ -26,10 +26,10 @@ defmodule ShootingGalleryWeb.GamesChannel do
 
   def handle_in("moveCursor", %{"x" => x, "y" => y, "player" => player}, socket) do
     name = socket.assigns[:name]
-    game = Game.move(socket.assigns[:game], x, y, player)
+    game = BackupAgent.get(name)
+    game = Game.move(game, x, y, player)
     socket = assign(socket, :game, game)
     BackupAgent.put(name, game)
-    # broadcast!(socket, "moveCursor", %{x: x, y: y, p: p})
     push_update! game, socket
     {:reply, {:ok, %{"game" => Game.client_view(game)}}, socket}
   end
@@ -42,13 +42,6 @@ defmodule ShootingGalleryWeb.GamesChannel do
   defp push_update!(view, socket) do
     broadcast!(socket, "update", view)
   end
-
-  # def handle_in("update", _payload, socket) do
-  #   name = socket.assigns[:name]
-  #   game = socket.assigns[:game]
-  #   socket = assign(socket, :game, game)
-  #   {:reply, {:ok, %{"game" => Game.client_view(game)}}, socket}
-  # end
 
   # Add authorization logic here as required.
   defp authorized?(_payload) do
