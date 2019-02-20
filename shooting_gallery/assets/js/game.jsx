@@ -1,27 +1,50 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import Konva from "konva";
+import { Stage, Layer, Circle } from "react-konva";
 import _ from "lodash";
 
 export default function game_init(root, channel) {
-  ReactDOM.render(<Starter channel={channel} />, root);
+  ReactDOM.render(<Game channel={channel} />, root);
 }
 
-class Starter extends React.Component {
+class Game extends React.Component {
   constructor(props) {
     super(props);
     this.channel = props.channel;
-    this.state = {};
+    this.state = {
+      x: 0,
+      y: 0,
+      player: "demo"
+    };
     this.channel
       .join()
       .receive("ok", resp => {
         console.log("Joined successfully", resp);
         const g = resp.game;
-        this.setState(resp.game);
+        this.setState(g);
       })
       .receive("error", resp => {
         console.log("Unable to join", resp);
       });
   }
 
-  render() {}
+  moveCursor(e) {
+    this.setState({ x: e.screenX, y: e.screenY });
+  }
+
+
+  render() {
+    return (
+      <Stage width="500" height="500" onMouseMove={this.moveCursor.bind(this)}>
+        <Layer>
+          <Circle
+            x={this.state.x}
+            y={this.state.y}
+            fill="#000000"
+          />
+        </Layer>
+      </Stage>
+    );
+  }
 }

@@ -1,4 +1,4 @@
-defmodule Memory.Game do
+defmodule ShootingGallery.Game do
   def new do
     %{
       players: init_players()
@@ -19,5 +19,9 @@ defmodule Memory.Game do
     player1 = %{x: 0, y: 0, score: 0}
     player2 = %{x: 0, y: 0, score: 0}
     %{player1: player1, player2: player2}
+  end
+
+  def move(game, x, y, p) do
+    %{x: x, y: y, p: p}
   end
 end
