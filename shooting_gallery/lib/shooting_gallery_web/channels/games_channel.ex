@@ -9,13 +9,8 @@ defmodule ShootingGalleryWeb.GamesChannel do
   def join("games:" <> name, payload, socket) do
     if authorized?(payload) do
       game = BackupAgent.get(name) || Game.new()
-      if game.p1 == "" do
-        game = Map.put(game, :p1, payload["playerName"])
-        IO.inspect(game)
-      else
-        game = Map.put(game, :p2, payload["playerName"])
-        IO.inspect(game)
-      end
+      game = Game.selectPlayer(game, payload["playerName"])
+      IO.inspect(game)
       BackupAgent.put(name, game)
 
       socket =
