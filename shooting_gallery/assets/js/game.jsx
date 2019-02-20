@@ -21,7 +21,8 @@ class Game extends React.Component {
       p2: null,
       p: this.props.name,
       player: 0,
-      timer: "60"
+      timer: "60",
+      targets: []
     };
     this.channel
       .join()
@@ -52,14 +53,18 @@ class Game extends React.Component {
   // Move the cursor when the player moves their mouse
   moveCursor(e) {
     let x = e.evt.layerX,
-      y = e.evt.layerY;
-    this.channel
-      .push("moveCursor", { x: x, y: y, player: this.state.player })
-      .receive("ok", resp => {
-        console.log(resp.game);
-        this.setState(resp.game);
-        console.log(this.state);
-      });
+        y = e.evt.layerY;
+    this.channel.push("moveCursor", { x: x, y: y, player: this.state.player }).receive("ok", resp => {
+      this.setState(resp.game);
+    })
+  }
+
+  // Shoot the given target when it is clicked
+  shootTarget(id) {
+    this.channel.push("shootTarget", { player: this.state.player, id: id }).receive("ok", resp => {
+      this.setState(resp.game);
+      console.log(this.state);
+    })
   }
 
   confirmGame() {
@@ -106,12 +111,21 @@ class Game extends React.Component {
         onMouseMove={this.moveCursor.bind(this)}
       >
         <Layer>
-          {/* <Text text={this.state.timer}/> */}
           <Circle x={this.state.x1} y={this.state.y1} radius={10} fill="#000" />
           <Circle x={this.state.x2} y={this.state.y2} radius={10} fill="#ddd" />
           {timerButton}
+          <Targets root={this} />
         </Layer>
       </Stage>
     );
   }
+}
+
+function Targets(props) {
+  let root = props.root,
+      targets = root.state.targets,
+      renderedTargets = _.map(targets, target => {
+        return <Circle key={target.id} x={target.x} y={target.y} radius={20} fill="#f00" onClick={() => root.shootTarget(target.id)} />;
+      });
+  return renderedTargets;
 }
