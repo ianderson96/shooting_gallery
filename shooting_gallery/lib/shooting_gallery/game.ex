@@ -11,7 +11,7 @@ defmodule ShootingGallery.Game do
       y2: 0,
       s2: 0,
       p2Confirmed: false,
-      # players: init_players()
+      targets: [%{x: 50, y: 50, id: 0}]
     }
   end
 
@@ -27,6 +27,7 @@ defmodule ShootingGallery.Game do
       y2: game.y2,
       s2: game.s2,
       p2Confirmed: game.p2Confirmed,
+      targets: game.targets
     }
   end
 
@@ -48,7 +49,16 @@ defmodule ShootingGallery.Game do
     if player == 1 do
       Map.put(game, :p1Confirmed, true)
     else
-        Map.put(game, :p2Confirmed, true)
+      Map.put(game, :p2Confirmed, true)
+    end
+  end
+  
+  def shootTarget(game, player, id) do
+    targets = List.delete_at(game.targets, id);
+    if player == 1 do
+      Map.merge(game, %{s1: game.s1 + 1, targets: targets})
+    else
+      Map.merge(game, %{s2: game.s2 + 1, targets: targets})
     end
   end
 
