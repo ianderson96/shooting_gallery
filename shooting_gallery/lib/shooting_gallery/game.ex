@@ -5,10 +5,12 @@ defmodule ShootingGallery.Game do
       x1: 0,
       y1: 0,
       s1: 0,
+      p1Confirmed: false,
       p2: "",
       x2: 0,
       y2: 0,
-      s2: 0
+      s2: 0,
+      p2Confirmed: false,
       # players: init_players()
     }
   end
@@ -19,10 +21,12 @@ defmodule ShootingGallery.Game do
       x1: game.x1,
       y1: game.y1,
       s1: game.s1,
+      p1Confirmed: game.p1Confirmed,
       p2: game.p2,
       x2: game.x2,
       y2: game.y2,
       s2: game.s2,
+      p2Confirmed: game.p2Confirmed,
     }
   end
 
@@ -37,6 +41,14 @@ defmodule ShootingGallery.Game do
       Map.merge(game, %{x1: x, y1: y})
     else
       Map.merge(game, %{x2: x, y2: y})
+    end
+  end
+
+  def confirmPlayer(game, player) do
+    if player == 1 do
+      Map.put(game, :p1Confirmed, true)
+    else
+        Map.put(game, :p2Confirmed, true)
     end
   end
 
