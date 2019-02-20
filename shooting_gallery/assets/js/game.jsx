@@ -17,6 +17,8 @@ class Game extends React.Component {
       y2: 0,
       x2: 0,
       y2: 0,
+      s1: 0,
+      s2: 0,
       p1: null,
       p2: null,
       p: this.props.name,
@@ -53,18 +55,22 @@ class Game extends React.Component {
   // Move the cursor when the player moves their mouse
   moveCursor(e) {
     let x = e.evt.layerX,
-        y = e.evt.layerY;
-    this.channel.push("moveCursor", { x: x, y: y, player: this.state.player }).receive("ok", resp => {
-      this.setState(resp.game);
-    })
+      y = e.evt.layerY;
+    this.channel
+      .push("moveCursor", { x: x, y: y, player: this.state.player })
+      .receive("ok", resp => {
+        this.setState(resp.game);
+      });
   }
 
   // Shoot the given target when it is clicked
   shootTarget(id) {
-    this.channel.push("shootTarget", { player: this.state.player, id: id }).receive("ok", resp => {
-      this.setState(resp.game);
-      console.log(this.state);
-    })
+    this.channel
+      .push("shootTarget", { player: this.state.player, id: id })
+      .receive("ok", resp => {
+        this.setState(resp.game);
+        console.log(this.state);
+      });
   }
 
   confirmGame() {
@@ -79,6 +85,14 @@ class Game extends React.Component {
     this.setState({
       timer: "" + time - 1
     });
+    let random = Math.random();
+    console.log(random);
+    if (random > 0.8) {
+      this.channel.push("addTarget", {}).receive("ok"),
+        resp => {
+          this.setState(resp.game);
+        };
+    }
   }
 
   render() {
@@ -105,12 +119,23 @@ class Game extends React.Component {
       );
     }
     return (
-      <Stage
-        width={1000}
-        height={1000}
-        onMouseMove={this.moveCursor.bind(this)}
-      >
+      <Stage width={900} height={400} onMouseMove={this.moveCursor.bind(this)}>
         <Layer>
+          <Text text={"Score"} x={600} y={5} fontSize={20} />
+          <Text
+            text={
+              this.state.p1 +
+              ": " +
+              this.state.s1 * 10 +
+              "  " +
+              this.state.p2 +
+              ": " +
+              this.state.s2 * 10
+            }
+            x={600}
+            y={25}
+            fontSize={20}
+          />
           <Circle x={this.state.x1} y={this.state.y1} radius={10} fill="#000" />
           <Circle x={this.state.x2} y={this.state.y2} radius={10} fill="#ddd" />
           {timerButton}
@@ -123,9 +148,18 @@ class Game extends React.Component {
 
 function Targets(props) {
   let root = props.root,
-      targets = root.state.targets,
-      renderedTargets = _.map(targets, target => {
-        return <Circle key={target.id} x={target.x} y={target.y} radius={20} fill="#f00" onClick={() => root.shootTarget(target.id)} />;
-      });
+    targets = root.state.targets,
+    renderedTargets = _.map(targets, target => {
+      return (
+        <Circle
+          key={target.id}
+          x={target.x}
+          y={target.y}
+          radius={20}
+          fill="#f00"
+          onClick={() => root.shootTarget(target.id)}
+        />
+      );
+    });
   return renderedTargets;
 }

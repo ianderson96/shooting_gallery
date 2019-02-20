@@ -50,7 +50,17 @@ defmodule ShootingGalleryWeb.GamesChannel do
     game = Game.shootTarget(game, player, id)
     socket = assign(socket, :game, game)
     BackupAgent.put(name, game)
-    push_update! game, socket
+    push_update!(game, socket)
+    {:reply, {:ok, %{"game" => Game.client_view(game)}}, socket}
+  end
+
+  def handle_in("addTarget", _payload, socket) do
+    name = socket.assigns[:name]
+    game = BackupAgent.get(name)
+    game = Game.addTarget(game)
+    socket = assign(socket, :game, game)
+    BackupAgent.put(name, game)
+    push_update!(game, socket)
     {:reply, {:ok, %{"game" => Game.client_view(game)}}, socket}
   end
 

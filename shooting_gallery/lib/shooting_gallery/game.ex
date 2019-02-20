@@ -11,7 +11,7 @@ defmodule ShootingGallery.Game do
       y2: 0,
       s2: 0,
       p2Confirmed: false,
-      targets: [%{x: 50, y: 50, id: 0}]
+      targets: []
     }
   end
 
@@ -52,9 +52,10 @@ defmodule ShootingGallery.Game do
       Map.put(game, :p2Confirmed, true)
     end
   end
-  
+
   def shootTarget(game, player, id) do
-    targets = List.delete_at(game.targets, id);
+    targets = Enum.reject(game.targets, fn x -> x.id == id end)
+
     if player == 1 do
       Map.merge(game, %{s1: game.s1 + 1, targets: targets})
     else
@@ -62,8 +63,18 @@ defmodule ShootingGallery.Game do
     end
   end
 
+  def addTarget(game) do
+    targets = game.targets
+
+    newTargets =
+      targets ++ [%{x: :rand.uniform(850), y: :rand.uniform(350), id: :rand.uniform(100_000)}]
+
+    game
+    |> Map.put(:targets, newTargets)
+  end
+
   def selectPlayer(game, playerName) do
-    if (game.p1 == "") || (game.p1 == playerName) do
+    if game.p1 == "" || game.p1 == playerName do
       Map.put(game, :p1, playerName)
     else
       Map.put(game, :p2, playerName)
