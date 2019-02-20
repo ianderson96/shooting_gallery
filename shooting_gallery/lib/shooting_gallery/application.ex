@@ -9,7 +9,9 @@ defmodule ShootingGallery.Application do
     # List all child processes to be supervised
     children = [
       # Start the endpoint when the application starts
-      ShootingGalleryWeb.Endpoint
+      ShootingGalleryWeb.Endpoint,
+      ShootingGallery.GameSup,
+      ShootingGallery.BackupAgent
       # Starts a worker by calling: ShootingGallery.Worker.start_link(arg)
       # {ShootingGallery.Worker, arg},
     ]

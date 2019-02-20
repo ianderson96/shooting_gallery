@@ -1,35 +1,19 @@
-<section class="phx-hero">
-  <h1><%= gettext "Welcome to %{name}!", name: "Phoenix" %></h1>
-  <p>A productive web framework that<br/>does not compromise speed and maintainability.</p>
-</section>
+<script type="text/javascript">
+  function startGame() {
+    var name = document.getElementById("gameName").value,
+        playerName = document.getElementById("playerName").value;
+    if (name.length > 0 && playerName.length > 0) {
+      localStorage.setItem("playerName", playerName);
+      location.href = "/game/" + name;
+    }
+  }
+</script>
 
-<section class="row">
-  <article class="column">
-    <h2>Resources</h2>
-    <ul>
-      <li>
-        <a href="https://hexdocs.pm/phoenix/overview.html">Guides &amp; Docs</a>
-      </li>
-      <li>
-        <a href="https://github.com/phoenixframework/phoenix">Source</a>
-      </li>
-      <li>
-        <a href="https://github.com/phoenixframework/phoenix/blob/v1.4/CHANGELOG.md">v1.4 Changelog</a>
-      </li>
-    </ul>
-  </article>
-  <article class="column">
-    <h2>Help</h2>
-    <ul>
-      <li>
-        <a href="https://elixirforum.com/c/phoenix-forum">Forum</a>
-      </li>
-      <li>
-        <a href="https://webchat.freenode.net/?channels=elixir-lang">#elixir-lang on Freenode IRC</a>
-      </li>
-      <li>
-        <a href="https://twitter.com/elixirphoenix">Twitter @elixirphoenix</a>
-      </li>
-    </ul>
-  </article>
-</section>
+<div class="row">
+  <div class="column">
+    <h1 id="index-page">Enter your name</h1>
+    <input id="playerName" type="text" placeholder="Name" />
+    <input id="gameName" type="text" placeholder="Game name" />
+    <button onclick="startGame()">Join Game</button>
+  </div>
+</div>

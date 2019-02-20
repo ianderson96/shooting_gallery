@@ -17,29 +17,21 @@ defmodule ShootingGallery.GameServer do
   end
 
   def start_link(name) do
-    game = ShootingGallery.BackupAgent.get(name) || Hangman.Game.new()
+    game = ShootingGallery.BackupAgent.get(name) || ShootingGallery.Game.new()
     GenServer.start_link(__MODULE__, game, name: reg(name))
-  end
-
-  def guess(name, letter) do
-    GenServer.call(reg(name), {:guess, name, letter})
-  end
-
-  def peek(name) do
-    GenServer.call(reg(name), {:peek, name})
   end
 
   def init(game) do
     {:ok, game}
   end
 
-  def handle_call({:guess, name, letter}, _from, game) do
-    game = ShootingGallery.Game.guess(game, letter)
-    ShootingGallery.BackupAgent.put(name, game)
-    {:reply, game, game}
+  def move(name, x, y, player) do
+    GenServer.call(reg(name), {:move, name, x, y, player})
   end
 
-  def handle_call({:peek, _name}, _from, game) do
+  def handle_call({:move, name, x, y, player}, _from, game) do
+    game = ShootingGallery.Game.move(game, x, y, player)
+    ShootingGallery.BackupAgent.put(name, game)
     {:reply, game, game}
   end
 end
