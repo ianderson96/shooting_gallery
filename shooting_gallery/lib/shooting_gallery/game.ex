@@ -34,11 +34,17 @@ defmodule ShootingGallery.Game do
 
   def move(game, x, y, player) do
     if player == 1 do
-      game2 = Map.merge(game, %{x1: x, y1: y})
-      game2
+      Map.merge(game, %{x1: x, y1: y})
     else
-      game2 = Map.merge(game, %{x2: x, y2: y})
-      game2
+      Map.merge(game, %{x2: x, y2: y})
+    end
+  end
+
+  def selectPlayer(game, playerName) do
+    if (game.p1 == "") || (game.p1 == playerName) do
+      Map.put(game, :p1, playerName)
+    else
+      Map.put(game, :p2, playerName)
     end
   end
 end

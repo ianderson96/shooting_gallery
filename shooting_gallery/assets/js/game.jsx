@@ -28,22 +28,13 @@ class Game extends React.Component {
         console.log("Joined successfully", resp);
         const g = resp.game;
         this.setState(g);
-        console.log(g.p1);
-        if (!g.p1) {
-          this.setState({p1: this.props.name, player: 1});
+        if (g.p1 === this.props.name) {
+          this.setState({player: 1});
         }
-        else {
-          if (g.p1 && !g.p2) {
-            this.setState({p2: this.props.name, player: 2});
-          }
+        if (g.p2 === this.props.name) {
+          this.setState({player: 2});
         }
         this.setState({p: this.props.name});
-        if (this.state.p === g.p1) {
-          this.setState({player: 1})
-        }
-        if (this.state.p === g.p2) {
-          this.setState({player: 2})
-        }
       })
       .receive("error", resp => {
         console.log("Unable to join", resp);
@@ -63,7 +54,6 @@ class Game extends React.Component {
       console.log(resp.game);
       this.setState(resp.game);
       console.log(this.state);
-      // this.setState({ x: x, y: y });
     })
   }
 
