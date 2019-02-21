@@ -11,7 +11,8 @@ defmodule ShootingGallery.Game do
       y2: 0,
       s2: 0,
       p2Confirmed: false,
-      targets: []
+      targets: [],
+      gameEnded: false
     }
   end
 
@@ -27,14 +28,9 @@ defmodule ShootingGallery.Game do
       y2: game.y2,
       s2: game.s2,
       p2Confirmed: game.p2Confirmed,
-      targets: game.targets
+      targets: game.targets,
+      gameEnded: game.gameEnded
     }
-  end
-
-  def init_players() do
-    player1 = %{x: 0, y: 0, score: 0}
-    player2 = %{x: 0, y: 0, score: 0}
-    %{player1: player1, player2: player2}
   end
 
   def move(game, x, y, player) do
@@ -47,19 +43,22 @@ defmodule ShootingGallery.Game do
 
   def confirmPlayer(game, player) do
     if player == 1 do
-      Map.put(game, :p1Confirmed, true)
+      game
+        |> Map.merge(%{p1Confirmed: true})
     else
-      Map.put(game, :p2Confirmed, true)
+      game
+        |> Map.merge(%{p2Confirmed: true})
     end
   end
 
   def shootTarget(game, player, id) do
     targets = Enum.reject(game.targets, fn x -> x.id == id end)
-
     if player == 1 do
-      Map.merge(game, %{s1: game.s1 + 1, targets: targets})
+      game
+        |> Map.merge( %{s1: game.s1 + 1, targets: targets})
     else
-      Map.merge(game, %{s2: game.s2 + 1, targets: targets})
+      game
+        |> Map.merge(%{s2: game.s2 + 1, targets: targets})
     end
   end
 
@@ -82,5 +81,15 @@ defmodule ShootingGallery.Game do
     else
       Map.put(game, :p2, playerName)
     end
+  end
+
+  def startGame(game) do
+    game
+      |> Map.merge(%{s1: 0, s2: 0, targets: [], gameEnded: false})
+  end
+
+  def endGame(game) do
+    game
+      |> Map.merge(%{p1Confirmed: false, p2Confirmed: false, targets: [], gameEnded: true})
   end
 end

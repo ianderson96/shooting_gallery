@@ -64,6 +64,26 @@ defmodule ShootingGalleryWeb.GamesChannel do
     {:reply, {:ok, %{"game" => Game.client_view(game)}}, socket}
   end
 
+  def handle_in("startGame", _payload, socket) do
+    name = socket.assigns[:name]
+    game = BackupAgent.get(name)
+    game = Game.startGame(game)
+    socket = assign(socket, :game, game)
+    BackupAgent.put(name, game)
+    push_update!(game, socket)
+    {:reply, {:ok, %{"game" => Game.client_view(game)}}, socket}
+  end
+
+  def handle_in("endGame", _payload, socket) do
+    name = socket.assigns[:name]
+    game = BackupAgent.get(name)
+    game = Game.endGame(game)
+    socket = assign(socket, :game, game)
+    BackupAgent.put(name, game)
+    push_update!(game, socket)
+    {:reply, {:ok, %{"game" => Game.client_view(game)}}, socket}
+  end
+
   def handle_out("update", game_data, socket) do
     push(socket, "update", %{"game" => game_data})
     {:noreply, socket}
