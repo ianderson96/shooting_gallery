@@ -11,9 +11,14 @@
 
 <div class="row">
   <div class="column">
-    <h1 id="index-page">Enter your name</h1>
+    <h1 id="index-page">Join a Game</h1>
+    <p>Welcome to the Shooting Gallery! Join the same game board as a friend to play. <br/>
+    You have 60 seconds to shoot as many targets as you can. If you break more than your opponent, you win!</p>
     <input id="playerName" type="text" placeholder="Name" />
-    <input id="gameName" type="text" placeholder="Game name" />
+    <p style="font-size: 14px">This will be your username for the game you join.</p>
+    <input id="gameName" type="text" placeholder="Game board name" />
+    <p style="font-size: 14px">This is the name of the game you want to join. 
+    If this game doesn't already exist, it will be created.</p>
     <button onclick="startGame()">Join Game</button>
   </div>
 </div>

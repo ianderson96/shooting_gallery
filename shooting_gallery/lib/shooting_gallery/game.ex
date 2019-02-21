@@ -51,14 +51,24 @@ defmodule ShootingGallery.Game do
     end
   end
 
+  def getScoreAdd(type) do
+    if type == 8 do
+        30
+    else
+        10
+    end
+  end
+
   def shootTarget(game, player, id) do
     targets = Enum.reject(game.targets, fn x -> x.id == id end)
+    target = hd(Enum.filter(game.targets, fn x -> x.id == id end))
+    scoreAdd = getScoreAdd(target.type)
     if player == 1 do
       game
-        |> Map.merge( %{s1: game.s1 + 1, targets: targets})
+        |> Map.merge( %{s1: game.s1 + scoreAdd, targets: targets})
     else
       game
-        |> Map.merge(%{s2: game.s2 + 1, targets: targets})
+        |> Map.merge(%{s2: game.s2 + scoreAdd, targets: targets})
     end
   end
 
@@ -67,9 +77,9 @@ defmodule ShootingGallery.Game do
 
     newTargets =
       targets ++ [%{x: :rand.uniform(850), 
-      y: :rand.uniform(280)+ 70, 
+      y: :rand.uniform(400)+ 70, 
       id: :rand.uniform(100_000), 
-      type: :rand.uniform(5)}]
+      type: :rand.uniform(9)}]
 
     game
     |> Map.put(:targets, newTargets)

@@ -134,10 +134,10 @@ class Game extends React.Component {
   // calculate offset from center for moving targets
   calculateOffset() {
     if(this.state.offsetDirection == "right") {
-        this.setState({offset: this.state.offset + 2});
+        this.setState({offset: this.state.offset + 1});
       }
       if(this.state.offsetDirection == "left") {
-        this.setState({offset: this.state.offset - 2});
+        this.setState({offset: this.state.offset - 1});
       }
       if (this.state.offset >= 200) {
           this.setState({offsetDirection: "left"});
@@ -168,6 +168,8 @@ class Game extends React.Component {
         </Group>
       );
     } else {
+        let playerConfirmed = "p" + this.state.player + "Confirmed";
+        console.log(this.state[playerConfirmed])
       if (this.state.gameEnded) {
         timerButton = (
           <Group>
@@ -175,22 +177,28 @@ class Game extends React.Component {
             <Score root={this}/>
             <Outcome root={this} />
             <Group onClick={this.confirmGame.bind(this)}>
-              <Rect x={10} y={10} width={150} height={40} fill="#ddd" />
+              <Rect x={10} y={10} width={150} height={40} fill={this.state[playerConfirmed] ? "#ddd" : "#33BBFF"} />
               <Text text="Restart Game" x={20} y={25} fontSize={20} />
+              <Text text="Waiting on:" x={20} y={55} fontSize={18} />
+              <Text text={this.state.p1Confirmed ? "" : this.state.p1 } x={20} y={75} fontSize={15} />
+              <Text text={this.state.p2Confirmed ? "" : this.state.p2 } x={20} y={95} fontSize={15} />
             </Group>
           </Group>
         )
       } else {
         timerButton = (
           <Group onClick={this.confirmGame.bind(this)}>
-            <Rect x={10} y={10} width={120} height={40} fill="#ddd" />
+            <Rect x={10} y={10} width={120} height={40} fill={this.state[playerConfirmed] ? "#ddd" : "#33BBFF"} />
             <Text text="Start Game" x={20} y={25} fontSize={20} />
+            <Text text="Waiting on:" x={20} y={55} fontSize={18} />
+            <Text text={this.state.p1Confirmed ? "" : this.state.p1 } x={20} y={75} fontSize={15} />
+            <Text text={this.state.p2Confirmed ? "" : this.state.p2 } x={20} y={95} fontSize={15} />
           </Group>
         );
       }
     }
     return (
-      <Stage width={900} height={400} onMouseMove={this.moveCursor.bind(this)}>
+      <Stage width={900} height={500} onMouseMove={this.moveCursor.bind(this)}>
         <Layer>
           <Cursor x={this.state.x1} y={this.state.y1} color="#00f" />
           <Cursor x={this.state.x2} y={this.state.y2} color="#00ff00" />
@@ -213,7 +221,7 @@ function Targets(props) {
           x={target.type == 3 ? target.x + props.state.offset : target.x}
           y={target.type == 2 ? target.y + props.state.offset : target.y}
           radius={20}
-          fill="#f00"
+          fill={target.type == 8 ? "#F9AE19" : "#f00"}
         />
         <Circle
           key={target.id + 1}
@@ -227,7 +235,7 @@ function Targets(props) {
           x={target.type == 3 ? target.x + props.state.offset : target.x}
           y={target.type == 2 ? target.y + props.state.offset : target.y}
           radius={5}
-          fill="#f00"
+          fill={target.type == 8 ? "#F9AE19" : "#f00"}
         />
         </Group>
       );
