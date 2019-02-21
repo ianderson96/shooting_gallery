@@ -131,6 +131,7 @@ class Game extends React.Component {
       });
   }
 
+  // calculate offset from center for moving targets
   calculateOffset() {
     if(this.state.offsetDirection == "right") {
         this.setState({offset: this.state.offset + 2});
@@ -151,7 +152,7 @@ class Game extends React.Component {
     if (!this.state.gameEnded && this.state.p1Confirmed && this.state.p2Confirmed) {
       if (!this.state.gameStarted) {
         this.intervalHandle = setInterval(this.tick.bind(this), 1000);
-        // this.offsetHandle = setInterval(this.calculateOffset.bind(this), 0);
+        this.offsetHandle = setInterval(this.calculateOffset.bind(this), 0);
         this.setState({ gameStarted: true });
       }
       timerButton = (
