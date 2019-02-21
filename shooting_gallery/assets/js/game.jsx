@@ -13,20 +13,24 @@ class Game extends React.Component {
     super(props);
     this.channel = props.channel;
     this.state = {
-      x1: 0,
-      y2: 0,
-      x2: 0,
-      y2: 0,
-      s1: 0,
-      s2: 0,
-      p1: null,
-      p2: null,
-      p: this.props.name,
-      player: 0,
+      x1: 0, // x-coordinate of Player 1
+      y2: 0, // y-coordinate of Player 1
+      x2: 0, // x-coordinate of Player 2
+      y2: 0, // y-coordinate of Player 2
+      s1: 0, // Player 1's score
+      s2: 0, // Player 2's score
+      p1: null, // Player 1's name
+      p1Confirmed: false, // is Player 1 ready to play?
+      p2: null, // Player 2's name
+      p2Confirmed: false, // is Player 2 ready to play?
+      p: this.props.name, // current player's name
+      player: 0, // current player's number
       timer: "60",
       targets: [],
-      offset: 0,
+      offset: 0, 
       offsetDirection: "right",
+      gameStarted: false,
+      gameEnded: false
     };
     this.channel
       .join()
@@ -48,7 +52,6 @@ class Game extends React.Component {
     this.channel.on("update", resp => {
       const g = resp.game;
       this.setState(g);
-      // console.log(this.state);
     });
 
     this.intervalHandle;
@@ -75,25 +78,57 @@ class Game extends React.Component {
       });
   }
 
+  // Tell the game that the given player is ready to play
   confirmGame() {
-    this.channel.push("confirm", { player: this.state.player }).receive("ok"),
-      resp => {
+    this.channel.push("confirm", { player: this.state.player })
+    .receive("ok", resp => {
         this.setState(resp.game);
-      };
+        if (this.state.p1Confirmed && this.state.p2Confirmed) {
+          this.startGame();
+        }
+      });
   }
 
+  // Update the game every tick
   tick() {
     let time = parseInt(this.state.timer);
     this.setState({
       timer: "" + time - 1
     });
-    let random = Math.random();
-    if (random > 0.7) {
-      this.channel.push("addTarget", {}).receive("ok"),
-        resp => {
-          this.setState(resp.game);
-        };
+    if (this.state.timer <= 0) {
+      this.endGame();
     }
+    else {
+      let random = Math.random();
+      if (random > 0.7) {
+        this.channel.push("addTarget", {})
+        .receive("ok",
+          resp => {
+            this.setState(resp.game);
+          });
+      }
+    }
+    
+  }
+
+  // Start the game when both players are ready
+  startGame() {
+    this.channel.push("startGame", {})
+    .receive("ok",
+      resp => {
+        this.setState(resp.game);
+      });
+  }
+
+  // End the game when the timer runs out
+  endGame() {
+    this.channel.push("endGame", {})
+    .receive("ok",
+      resp => {
+        this.setState(resp.game);
+        this.setState({ timer: "60", gameStarted: false });
+        clearInterval(this.intervalHandle);
+      });
   }
 
   calculateOffset() {
@@ -114,46 +149,49 @@ class Game extends React.Component {
 
   render() {
     let timerButton;
-    if (this.state.p1Confirmed && this.state.p2Confirmed) {
+    if (!this.state.gameEnded && this.state.p1Confirmed && this.state.p2Confirmed) {
       if (!this.state.gameStarted) {
         this.intervalHandle = setInterval(this.tick.bind(this), 1000);
         this.offsetHandle = setInterval(this.calculateOffset.bind(this), 0);
         this.setState({ gameStarted: true });
       }
       timerButton = (
-        <Text
-          text={"Time remaining: " + this.state.timer}
-          x={20}
-          y={22.5}
-          fontSize={20}
-        />
-      );
-    } else {
-      timerButton = (
-        <Group onClick={this.confirmGame.bind(this)}>
-          <Rect x={10} y={10} width={120} height={40} fill="#ddd" />
-          <Text text="Start Game" x={20} y={25} fontSize={20} />
+        <Group>
+          <Text
+            text={"Time remaining: " + this.state.timer}
+            x={20}
+            y={22.5}
+            fontSize={20}
+          />
+          <Text text={"Score"} x={600} y={5} fontSize={20} />
+          <Score root={this}/>
         </Group>
       );
+    } else {
+      if (this.state.gameEnded) {
+        timerButton = (
+          <Group>
+            <Text text={"Score"} x={600} y={5} fontSize={20} />
+            <Score root={this}/>
+            <Outcome root={this} />
+            <Group onClick={this.confirmGame.bind(this)}>
+              <Rect x={10} y={10} width={150} height={40} fill="#ddd" />
+              <Text text="Restart Game" x={20} y={25} fontSize={20} />
+            </Group>
+          </Group>
+        )
+      } else {
+        timerButton = (
+          <Group onClick={this.confirmGame.bind(this)}>
+            <Rect x={10} y={10} width={120} height={40} fill="#ddd" />
+            <Text text="Start Game" x={20} y={25} fontSize={20} />
+          </Group>
+        );
+      }
     }
     return (
       <Stage width={900} height={400} onMouseMove={this.moveCursor.bind(this)}>
         <Layer>
-          <Text text={"Score"} x={600} y={5} fontSize={20} />
-          <Text
-            text={
-              this.state.p1 +
-              ": " +
-              this.state.s1 * 10 +
-              "  " +
-              this.state.p2 +
-              ": " +
-              this.state.s2 * 10
-            }
-            x={600}
-            y={25}
-            fontSize={20}
-          />
           <Circle x={this.state.x1} y={this.state.y1} radius={10} fill="#000" />
           <Circle x={this.state.x2} y={this.state.y2} radius={10} fill="#ddd" />
           {timerButton}
@@ -195,4 +233,31 @@ function Targets(props) {
       );
     });
   return renderedTargets;
+}
+
+function Score(props) {
+  let root = props.root,
+      state = root.state,
+      score = state.p1 + ": " + state.s1 + "\n" + state.p2 + ": " + state.s2;
+  return (
+    <Text text={score} x={600} y={25} fontSize={20} />
+  )
+}
+
+function Outcome(props) {
+  let root = props.root,
+      state = root.state,
+      result = "";
+  if (state.s1 > state.s2) {
+    result = state.p1 + " wins!";
+  }
+  if (state.s2 > state.s1) {
+    result = state.p2 + " wins!";
+  }
+  if (state.s1 === state.s2) {
+    result = "Tie!";
+  }
+  return (
+    <Text text={result} x={300} y={150} fontSize={40} />
+  )
 }
