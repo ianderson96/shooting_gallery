@@ -67,7 +67,10 @@ defmodule ShootingGallery.Game do
     targets = game.targets
 
     newTargets =
-      targets ++ [%{x: :rand.uniform(850), y: :rand.uniform(350), id: :rand.uniform(100_000)}]
+      targets ++ [%{x: :rand.uniform(850), 
+      y: :rand.uniform(280)+ 70, 
+      id: :rand.uniform(100_000), 
+      type: :rand.uniform(5)}]
 
     game
     |> Map.put(:targets, newTargets)
