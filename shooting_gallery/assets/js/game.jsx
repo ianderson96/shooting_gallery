@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import Konva from "konva";
-import { Stage, Layer, Circle, Rect, Text, Group } from "react-konva";
+import { Stage, Layer, Circle, Rect, Text, Group, Line } from "react-konva";
 import _ from "lodash";
 
 export default function game_init(root, channel, playerName) {
@@ -144,7 +144,6 @@ class Game extends React.Component {
       if (this.state.offset <= -200 ){
         this.setState({offsetDirection: "right"});
     }
-      
   }
 
   render() {
@@ -152,7 +151,7 @@ class Game extends React.Component {
     if (!this.state.gameEnded && this.state.p1Confirmed && this.state.p2Confirmed) {
       if (!this.state.gameStarted) {
         this.intervalHandle = setInterval(this.tick.bind(this), 1000);
-        this.offsetHandle = setInterval(this.calculateOffset.bind(this), 0);
+        // this.offsetHandle = setInterval(this.calculateOffset.bind(this), 0);
         this.setState({ gameStarted: true });
       }
       timerButton = (
@@ -192,8 +191,8 @@ class Game extends React.Component {
     return (
       <Stage width={900} height={400} onMouseMove={this.moveCursor.bind(this)}>
         <Layer>
-          <Circle x={this.state.x1} y={this.state.y1} radius={10} fill="#000" />
-          <Circle x={this.state.x2} y={this.state.y2} radius={10} fill="#ddd" />
+          <Cursor x={this.state.x1} y={this.state.y1} color="#00f" />
+          <Cursor x={this.state.x2} y={this.state.y2} color="#00ff00" />
           {timerButton}
           <Targets root={this} state={this.state}/>
         </Layer>
@@ -233,6 +232,37 @@ function Targets(props) {
       );
     });
   return renderedTargets;
+}
+
+function Cursor(props) {
+  let x = props.x,
+      xUpper = x + 14,
+      xLower = x - 14,
+      y = props.y,
+      yUpper = y + 14,
+      yLower = y - 14,
+      color = props.color;
+  return (
+    <Group>
+      <Circle 
+        x={x}
+        y={y}
+        radius={10}
+        stroke={color}
+        strokeWidth={2}
+      />
+      <Line
+        points={[xLower, y, xUpper, y]}
+        stroke={color}
+        strokeWidth={2}
+      />
+      <Line
+        points={[x, yLower, x, yUpper]}
+        stroke={color}
+        strokeWidth={2}
+      />
+    </Group>
+  )
 }
 
 function Score(props) {
