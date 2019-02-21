@@ -100,7 +100,7 @@ class Game extends React.Component {
     }
     else {
       let random = Math.random();
-      if (random > 0.7) {
+      if (random > 0.7 && !this.state.gameEnded) {
         this.channel.push("addTarget", {})
         .receive("ok",
           resp => {
