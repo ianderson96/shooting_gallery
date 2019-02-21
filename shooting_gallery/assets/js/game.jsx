@@ -24,7 +24,9 @@ class Game extends React.Component {
       p: this.props.name,
       player: 0,
       timer: "60",
-      targets: []
+      targets: [],
+      offset: 0,
+      offsetDirection: "right",
     };
     this.channel
       .join()
@@ -50,6 +52,7 @@ class Game extends React.Component {
     });
 
     this.intervalHandle;
+    this.offsetHandle;
   }
 
   // Move the cursor when the player moves their mouse
@@ -69,7 +72,6 @@ class Game extends React.Component {
       .push("shootTarget", { player: this.state.player, id: id })
       .receive("ok", resp => {
         this.setState(resp.game);
-        console.log(this.state);
       });
   }
 
@@ -86,8 +88,7 @@ class Game extends React.Component {
       timer: "" + time - 1
     });
     let random = Math.random();
-    console.log(random);
-    if (random > 0.8) {
+    if (random > 0.7) {
       this.channel.push("addTarget", {}).receive("ok"),
         resp => {
           this.setState(resp.game);
@@ -95,11 +96,28 @@ class Game extends React.Component {
     }
   }
 
+  calculateOffset() {
+    if(this.state.offsetDirection == "right") {
+        this.setState({offset: this.state.offset + 2});
+      }
+      if(this.state.offsetDirection == "left") {
+        this.setState({offset: this.state.offset - 2});
+      }
+      if (this.state.offset >= 200) {
+          this.setState({offsetDirection: "left"});
+      }
+      if (this.state.offset <= -200 ){
+        this.setState({offsetDirection: "right"});
+    }
+      
+  }
+
   render() {
     let timerButton;
     if (this.state.p1Confirmed && this.state.p2Confirmed) {
       if (!this.state.gameStarted) {
         this.intervalHandle = setInterval(this.tick.bind(this), 1000);
+        this.offsetHandle = setInterval(this.calculateOffset.bind(this), 0);
         this.setState({ gameStarted: true });
       }
       timerButton = (
@@ -139,7 +157,7 @@ class Game extends React.Component {
           <Circle x={this.state.x1} y={this.state.y1} radius={10} fill="#000" />
           <Circle x={this.state.x2} y={this.state.y2} radius={10} fill="#ddd" />
           {timerButton}
-          <Targets root={this} />
+          <Targets root={this} state={this.state}/>
         </Layer>
       </Stage>
     );
@@ -151,14 +169,29 @@ function Targets(props) {
     targets = root.state.targets,
     renderedTargets = _.map(targets, target => {
       return (
+        <Group onClick={() => root.shootTarget(target.id)}>
         <Circle
           key={target.id}
-          x={target.x}
-          y={target.y}
+          x={target.type == 3 ? target.x + props.state.offset : target.x}
+          y={target.type == 2 ? target.y + props.state.offset : target.y}
           radius={20}
           fill="#f00"
-          onClick={() => root.shootTarget(target.id)}
         />
+        <Circle
+          key={target.id + 1}
+          x={target.type == 3 ? target.x + props.state.offset : target.x}
+          y={target.type == 2 ? target.y + props.state.offset : target.y}
+          radius={12}
+          fill="#fff"
+        />
+        <Circle
+          key={target.id + 2}
+          x={target.type == 3 ? target.x + props.state.offset : target.x}
+          y={target.type == 2 ? target.y + props.state.offset : target.y}
+          radius={5}
+          fill="#f00"
+        />
+        </Group>
       );
     });
   return renderedTargets;
