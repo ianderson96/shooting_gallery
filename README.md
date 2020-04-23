@@ -1,4 +1,8 @@
-# ShootingGallery
+# Shooting Gallery
+
+This project was completed by Ian Anderson and Madeline Seraphin for our CS 4550 Web Development course. We created a Shooting Gallery game, inspired by the one on Wii Play, that can be played by two players simultaneously on different browsers. We utilized Web Sockets to make this live-updating game work.
+
+![Shooting Gallery Demo](demo/demo.gif)
 
 To start your Phoenix server:
 
