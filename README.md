@@ -1,5 +1,19 @@
-# shooting_gallery
-An online, multiplayer browser game created with React-Konva and the Phoenix framework. This game was inspired by the shooting range minigame from Wii Play, and was created by Ian Anderson and Maddie Seraphin for our CS4550 Web Development class with Nat Tuck.
+# ShootingGallery
 
-To access the completed game, please visit [http://shootinggallery.pontiac.fun](http://shootinggallery.pontiac.fun).
+To start your Phoenix server:
 
+  * Install dependencies with `mix deps.get`
+  * Install Node.js dependencies with `cd assets && npm install`
+  * Start Phoenix endpoint with `mix phx.server`
+
+Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+
+Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+
+## Learn more
+
+  * Official website: http://www.phoenixframework.org/
+  * Guides: https://hexdocs.pm/phoenix/overview.html
+  * Docs: https://hexdocs.pm/phoenix
+  * Mailing list: http://groups.google.com/group/phoenix-talk
+  * Source: https://github.com/phoenixframework/phoenix
